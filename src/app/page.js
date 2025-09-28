@@ -1,11 +1,11 @@
 import TodoApp from "./components/TodoApp";
-import TodoList from "./components/TodoList";
-
+import Login from "./components/Login";
+import Start from "./components/Start";
 export default function Home() {
   return (
     <>
       <h2 className="font-medium">Hello World</h2>
-      <TodoApp />
+      <Start />
     </>
     
   );
