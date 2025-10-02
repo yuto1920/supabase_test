@@ -2,34 +2,42 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase'; 
 
-
 const Header = () => {
-    const [currentUser, setcurrentUser] = useState('');
+    // ユーザー情報の初期値はnullの方が状態管理しやすい
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // 現在ログインしているユーザーを取得する処理
-    const getCurrentUser = async () => {
-        // ログインのセッションを取得する処理
-        const { data } = await supabase.auth.getSession();
-        // セッションがあるときだけ現在ログインしているユーザーを取得する
-        if (data.session !== null) {
-            // supabaseに用意されている現在ログインしているユーザーを取得する関数
-            const { data: { user } } = await supabase.auth.getUser();
-            // currentUserにユーザーのメールアドレスを格納
-            setcurrentUser(user.email);
-        }
-    };
-
-    // HeaderコンポーネントがレンダリングされたときにgetCurrentUser関数が実行される
     useEffect(() => {
-        getCurrentUser();
-    }, []);
+        // 1. 最初に現在のセッション情報を取得して、ユーザー状態をセット
+        const fetchUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session) {
+                setCurrentUser(session.user);
+            }
+        };
+        fetchUser();
 
+        // 2. 認証状態の変化（ログイン、ログアウトなど）を監視するリスナーを設定
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN') {
+                setCurrentUser(session.user);
+            }
+            if (event === 'SIGNED_OUT') {
+                setCurrentUser(null);
+            }
+        });
+
+        // 3. コンポーネントが不要になったらリスナーを解除（クリーンアップ）
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+    
+    
     return (
         <div style={{ padding: "1rem" }}>
             {currentUser ? (
-                // サーバーサイドとクライアントサイドでレンダーされる内容が違うときにエラーがでないようにする
                 <div suppressHydrationWarning={true}>
-                    <div style={{ paddingBottom: "1rem" }}>{currentUser} でログインしています。</div>
+                    <div style={{ paddingBottom: "1rem" }}>{currentUser.email} でログインしています。</div>
                 </div>
             ) : (
                 <div suppressHydrationWarning={true}>ログインしていません。</div>
