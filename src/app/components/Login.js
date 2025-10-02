@@ -1,12 +1,13 @@
 // components/Login.js
 "use client";
-import Link, { LinkProps } from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { supabase } from '../utils/supabase'; // Supabaseクライアントをインポート
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter(); 
 
 
   const handleSubmit = async (e) => {
@@ -20,9 +21,12 @@ const Login = () => {
         });
         if (error) throw error;
         alert('ログインしました！'); 
+        router.push('/Todo'); 
+
     } catch (error) {
       alert(error.message);
     }
+    
   };
 
   return (
@@ -40,11 +44,10 @@ const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Link href='Todo' as='/Todo' passHref>
-            <button type="submit">
+       
+          <button type="submit">
                 ログイン
-            </button>
-        </Link>
+          </button>
       </form>
     </div>
   );
