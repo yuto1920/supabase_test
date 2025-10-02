@@ -1,56 +1,62 @@
-// components/Login.js
-"use client";
+'use client'
+import { useEffect, useState } from 'react';
+// supabase
+import { supabase } from '../utils/supabase';
+// useRouterをインポート
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { supabase } from '../utils/supabase'; // Supabaseクライアントをインポート
 
-const Login = () => {
+// コンポーネント名はファイル名や役割に合わせてLoginにするのがおすすめです
+export default function Login() { 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter(); 
+  const router = useRouter();
 
-
+  // 1. 関数がイベント(e)を受け取るようにする
   const handleSubmit = async (e) => {
+    // 2. ページの再読み込みをキャンセル
     e.preventDefault();
 
     try {
-        // ログイン
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email,
-          password: password,
-        });
-        if (error) throw error;
-        alert('ログインしました！'); 
-        router.push('/Todo'); 
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
+      if (error) throw error; // エラーがあればcatchブロックに投げる
+      
+      console.log(data);
+      router.push('/Todo'); // ログイン成功後にページ遷移
 
     } catch (error) {
       alert(error.message);
     }
-    
-  };
+  }
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="メールアドレス"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="パスワード"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-       
+      <h1>ログイン</h1>
+      <div>
+        {/* 3. formのonSubmitに関数を渡す */}
+        <form onSubmit={handleSubmit}>
+          <label>
+            メールアドレス：
+          </label>
+          <input
+            type="email"
+            name="email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <label>
+            パスワード：
+          </label>
+          <input
+            type="password"
+            name="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {/* 4. ボタンのtypeを"submit"にし、onClickを削除 */}
           <button type="submit">
-                ログイン
+            ログイン
           </button>
-      </form>
+        </form>
+      </div>
     </div>
-  );
-};
-
-export default Login;
+  )
+}
