@@ -12,6 +12,7 @@ const Header = () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 setCurrentUser(session.user);
+                console.log(session.user)
             }
         };
         fetchUser();
