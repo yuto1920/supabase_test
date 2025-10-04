@@ -32,3 +32,22 @@ export const addTodo = async (title) => {
 export const deleteTodo = async (id) => {
     await supabase.from("Todo").delete().eq("id",id)
 }
+
+export const addUser = async ( id,email, name) => {
+  const { data, error} = await supabase
+  .from("profiles")
+  .insert({ id: id,email: email, name: name})
+
+  if (error) {
+    console.error("Error addUser",error);
+    throw new Error("Could not add user")
+  }
+
+  return data
+}
+
+export const updataUser = async (id,email,name) => {
+  await supabase.from("profiles").upsert([
+  { id: id, email, name }
+]);
+}

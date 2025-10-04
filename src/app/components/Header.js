@@ -1,10 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase'; 
+import { useAuth } from "../../../hooks/state";
 
 const Header = () => {
     // ユーザー情報の初期値はnullの方が状態管理しやすい
-    const [currentUser, setCurrentUser] = useState(null);
+    const { currentUser, setCurrentUser, name} = useAuth();
 
     useEffect(() => {
         // 1. 最初に現在のセッション情報を取得して、ユーザー状態をセット
@@ -12,7 +13,6 @@ const Header = () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 setCurrentUser(session.user);
-                console.log(session.user)
             }
         };
         fetchUser();
@@ -26,25 +26,32 @@ const Header = () => {
                 setCurrentUser(null);
             }
         });
+        
 
         // 3. コンポーネントが不要になったらリスナーを解除（クリーンアップ）
         return () => {
             subscription.unsubscribe();
         };
     }, []);
+
+    useEffect( () => {
+        console.log("currentUser",currentUser)
+    },[setCurrentUser])
     
     
     return (
-        <div style={{ padding: "1rem" }}>
-            {currentUser ? (
-                <div suppressHydrationWarning={true}>
-                    <div style={{ paddingBottom: "1rem" }}>{currentUser.email} でログインしています。</div>
-                </div>
-            ) : (
-                <div suppressHydrationWarning={true}>ログインしていません。</div>
-            )}
+         <div style={{ padding: "1rem" }}>
+    {currentUser ? (
+      <div suppressHydrationWarning={true}>
+        <div style={{ paddingBottom: "1rem" }}>
+            {name} ログインしています。
         </div>
-    );
+      </div>
+    ) : (
+      <div suppressHydrationWarning={true}>ログインしていません。</div>
+    )}
+  </div>
+        );
 }
 
 export default Header;
