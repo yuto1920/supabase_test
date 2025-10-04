@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../utils/supabase';
 // useRouterをインポート
 import { useRouter } from 'next/navigation';
+import { useAuth } from "../../../hooks/state"
 
 // コンポーネント名はファイル名や役割に合わせてLoginにするのがおすすめです
 export default function Login() { 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
+  const { email, setEmail, password, setPassword} = useAuth();
 
   // 1. 関数がイベント(e)を受け取るようにする
   const handleSubmit = async (e) => {

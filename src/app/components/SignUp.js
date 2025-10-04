@@ -1,12 +1,12 @@
 'use client'
-import { useState } from 'react';
 import { supabase } from '../utils/supabase'; 
 import { useRouter } from 'next/navigation';
+import { useAuth } from '../../../hooks/state';
+import { addUser } from '../utils/supabaseFunction';
 
-export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function SignUp() {
   const router = useRouter();
+  const { email, setEmail, password, setPassword, name, setName } = useAuth();
 
   // 1. 関数がイベントオブジェクト(e)を受け取るようにする
   const handleSubmit = async (e) => {
@@ -17,8 +17,14 @@ export default function Register() {
       const { data, error } = await supabase.auth.signUp({ email, password });
       
       if (error) throw error; // エラーがあればcatchブロックに投げる
-       
-      console.log(data);
+      //const userId = data.user?.id;
+      //console.log("新規登録ユーザーID:", userId);
+      //console.log("data",data);
+      //if (userId){
+        //await addUser(userId, email, name)
+      //}
+      
+
       alert('登録完了メールを確認してください。');
       router.push('/Login'); 
 
@@ -26,6 +32,7 @@ export default function Register() {
       // 4. try...catchでエラーを安全に処理する
       alert(error.message);
     }
+
   }
 
   return (
@@ -51,6 +58,15 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {/* 3. ボタンのtypeを"submit"にし、onClickを削除 */}
+          <label>
+            名前
+          </label>
+          <input
+            type="text"
+            name="name"
+            onChange={(e) => setName(e.target.value)}
+          />
+
           <button
             type="submit"
             style={{ width: 220 }}

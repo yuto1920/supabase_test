@@ -6,9 +6,10 @@ import { supabase } from '../utils/supabase';
 
 // useRouterをインポート
 import { useRouter } from 'next/navigation';
+import { useAuth } from "../../../hooks/state"
 
 const Logout = () => {
-  const [currentUser, setcurrentUser] = useState('');
+  const {currentUser, setCurrentUser} = useAuth();
   // routerを使うための記述
   const router = useRouter();
 
@@ -21,7 +22,7 @@ const Logout = () => {
       // supabaseに用意されている現在ログインしているユーザーを取得する関数
       const { data: { user } } = await supabase.auth.getUser()
       // currentUserにユーザーのメールアドレスを格納
-      setcurrentUser(user.email)
+      setCurrentUser(user.email)
     }
   }
 
