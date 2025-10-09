@@ -1,5 +1,4 @@
 'use client'
-import { useEffect, useState } from 'react';
 // supabase
 import { supabase } from '../utils/supabase';
 // useRouterをインポート
