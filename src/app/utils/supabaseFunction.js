@@ -2,7 +2,7 @@ import { supabase } from "./supabase"; // Make sure supabase client is imported
 
 export const getAllTodos = async () => {
     // Supabase returns both data and a potential error
-    const { data, error } = await supabase.from("Todo").select("*");
+    const { data, error } = await supabase.from("todos").select("*");
 
     // If an error exists, log it and throw it to stop execution
     if (error) {
@@ -15,11 +15,21 @@ export const getAllTodos = async () => {
 };
 
 export const addTodo = async (title) => {
+   const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    console.error("ログイン情報を取得できませんでした");
+    throw new Error("ログインしていません");
+  }
+  console.log("user",user)
   const { data, error } = await supabase
-    .from("Todo")
+    .from("todos")
     // idは自動で採番されるので、ここでは指定しない
     // titleカラムに、引数で受け取ったtitleを設定
-    .insert({ title: title });
+    .insert({ title: title , user_id: user.id});
 
   if (error) {
     console.error("Error adding todo:", error);
@@ -30,7 +40,7 @@ export const addTodo = async (title) => {
 }
 
 export const deleteTodo = async (id) => {
-    await supabase.from("Todo").delete().eq("id",id)
+  await supabase.from("todos").delete().eq("id",id)
 }
 
 export const addUser = async ( id,email, name) => {
