@@ -3,10 +3,11 @@ import React, { useEffect, useState } from 'react';
 import "./TodoApp.css";
 import { getAllTodos,addTodo } from '../utils/supabaseFunction';
 import TodoList from './TodoList'; // 1. TodoList をインポート
-
+import { useRouter } from 'next/navigation';
 const TodoApp = () => {
     const [todos, setTodos] = useState([]);
     const [title,setTitle] = useState("");
+    const router = useRouter();
 
     useEffect(() => {
         const getTodos = async () => {
@@ -29,6 +30,9 @@ const TodoApp = () => {
 
         setTitle("")
     }
+    const toProfile = () =>{
+        router.push("/profile")
+    }
 
 
     return (
@@ -42,6 +46,9 @@ const TodoApp = () => {
             </form>
             {/* 2. 'todos' stateをTodoListコンポーネントに渡す */}
             <TodoList todos={todos}  setTodos={setTodos}/> 
+
+            <button onClick={toProfile}>プロフィール画面へ</button>
+
         </section>
     );
 };

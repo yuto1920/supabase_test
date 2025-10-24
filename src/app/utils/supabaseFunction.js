@@ -15,7 +15,8 @@ export const getAllTodos = async () => {
 };
 
 export const addTodo = async (title) => {
-   const {
+  // 現在のユーザーを取得
+  const {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
@@ -24,20 +25,23 @@ export const addTodo = async (title) => {
     console.error("ログイン情報を取得できませんでした");
     throw new Error("ログインしていません");
   }
-  console.log("user",user)
+
+  // Todoを追加
   const { data, error } = await supabase
     .from("todos")
-    // idは自動で採番されるので、ここでは指定しない
-    // titleカラムに、引数で受け取ったtitleを設定
-    .insert({ title: title , user_id: user.id});
+    .insert([{ title, user_id: user.id }])
+    .select()
+    .single();
 
   if (error) {
     console.error("Error adding todo:", error);
-    throw new Error("Could not add todo");
+    throw new Error("Todoの追加に失敗しました");
   }
 
+  console.log("✅ Added todo:", data);
   return data;
-}
+};
+
 
 export const deleteTodo = async (id) => {
   await supabase.from("todos").delete().eq("id",id)
@@ -60,4 +64,17 @@ export const updataUser = async (id,email,name) => {
   await supabase.from("profiles").upsert([
   { id: id, email, name }
 ]);
+}
+
+export const getProfile = async () => {
+  const { data, error } = await supabase.from("profiles").select("*");
+
+    // If an error exists, log it and throw it to stop execution
+    if (error) {
+        console.error("Error fetching todos:", error);
+        throw new Error("Could not fetch todos");
+    }
+
+    // If there's no error, return the data
+    return data;
 }
