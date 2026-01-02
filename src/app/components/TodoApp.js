@@ -1,14 +1,27 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import "./TodoApp.css";
-import { getAllTodos,addTodo } from '../utils/supabaseFunction';
-import TodoList from './TodoList'; // 1. TodoList をインポート
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { addTodo, getAllTodos, getProfile } from '../utils/supabaseFunction';
+import "./TodoApp.css";
+import TodoList from './TodoList'; // 1. TodoList をインポート
 const TodoApp = () => {
     const [todos, setTodos] = useState([]);
     const [title,setTitle] = useState("");
     const router = useRouter();
-
+    const [ profile, setProfile] = useState(null)
+     useEffect(() => {
+            const plotProfile = async () => {
+                try {
+                    const fetchedProfile = await getProfile();
+                    setProfile(fetchedProfile || null); 
+                    // fetchedTodosがundefinedの場合に備えて空配列をセット
+                     console.log(fetchedProfile)
+                } catch (error) {
+                    console.error("データの取得に失敗しました:", error);
+                }
+              };
+              plotProfile(); 
+          }, []);
     useEffect(() => {
         const getTodos = async () => {
             try {
@@ -31,7 +44,7 @@ const TodoApp = () => {
         setTitle("")
     }
     const toProfile = () =>{
-        router.push("/profile")
+        router.push(`/${profile.id}/profile`)
     }
 
 

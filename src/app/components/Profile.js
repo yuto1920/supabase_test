@@ -23,7 +23,7 @@ const Profile = () => {
           plotProfile(); 
       }, []);
   const editClickHandler = () => {
-    router.push("/profile/edit")
+    router.push(`/${profile.id}/profile/edit`)
   }
   useEffect(() => {
     console.log("Stateが更新されました:", profile);

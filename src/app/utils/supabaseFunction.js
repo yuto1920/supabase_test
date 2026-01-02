@@ -47,10 +47,10 @@ export const deleteTodo = async (id) => {
   await supabase.from("todos").delete().eq("id",id)
 }
 
-export const addUser = async ( id, email, name) => {
+export const addUser = async ( id, username, from, age) => {
   const { data, error} = await supabase
   .from("profiles")
-  .insert({ id: id,email: email, username: name})
+  .insert({ id: id,username: username, from: from, age: age})
 
   if (error) {
     console.error("Error addUser",error);

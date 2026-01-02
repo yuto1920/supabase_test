@@ -10,7 +10,6 @@ import { useAuth } from "../../../hooks/state"
 
 const Logout = () => {
   const {currentUser, setCurrentUser} = useAuth();
-  // routerを使うための記述
   const router = useRouter();
 
     // 現在ログインしているユーザーを取得する処理
@@ -26,21 +25,16 @@ const Logout = () => {
     }
   }
 
-  // HeaderコンポーネントがレンダリングされたときにgetCurrentUser関数が実行される
   useEffect(()=>{
     getCurrentUser()
   },[])
 
-  // ログアウトの処理を追加
   const doLogout = async () => {
-    // supabaseに用意されているログアウトの関数
     const { error } = await supabase.auth.signOut()
     if (error) throw new Error(error.message)
-    // ログアウトを反映させるためにリロードさせる
     router.push('./')
   }
 
-  // ログアウトボタンも追加
   return (
     <div>
           <div>

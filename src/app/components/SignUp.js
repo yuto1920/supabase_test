@@ -2,34 +2,34 @@
 import { supabase } from '../utils/supabase'; 
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../hooks/state';
+import { useState } from 'react';
 import { addUser } from '../utils/supabaseFunction';
 
 export default function SignUp() {
   const router = useRouter();
-  const { email, setEmail, password, setPassword, name, setName } = useAuth();
-
-  // 1. 関数がイベントオブジェクト(e)を受け取るようにする
+  const { email, setEmail, password, setPassword, username, setUsername } = useAuth();
+  const [from, setFrom] = useState('');
+  const [age, setAge] = useState(0);
   const handleSubmit = async (e) => {
-    // 2. フォームのデフォルトの再読み込みを防ぐ
     e.preventDefault(); 
-    
     try {
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          username: username, 
+          from: from,        
+          age: age            
+        }
+      }
+    });
+      if (error) throw error; 
       
-      if (error) throw error; // エラーがあればcatchブロックに投げる
-      //const userId = data.user?.id;
-      //console.log("新規登録ユーザーID:", userId);
-      //console.log("data",data);
-      //if (userId){
-        //await addUser(userId, email, name)
-      //}
-      
-
       alert('登録完了メールを確認してください。');
       router.push('/Login'); 
 
     } catch (error) {
-      // 4. try...catchでエラーを安全に処理する
       alert(error.message);
     }
 
@@ -39,7 +39,6 @@ export default function SignUp() {
     <div>
       <h1>新規登録</h1>
       <div>
-        {/* 1. formのonSubmitに関数を渡す */}
         <form onSubmit={handleSubmit}>
           <label>
             メールアドレス：
@@ -57,16 +56,30 @@ export default function SignUp() {
             name="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          {/* 3. ボタンのtypeを"submit"にし、onClickを削除 */}
           <label>
             名前
           </label>
           <input
             type="text"
-            name="name"
-            onChange={(e) => setName(e.target.value)}
+            name="username"
+            onChange={(e) => setUsername(e.target.value)}
           />
-
+          <label>
+            出身
+          </label>
+          <input
+            type="text"
+            name="from"
+            onChange={(e) => setFrom(e.target.value)}
+          />
+          <label>
+            年齢
+          </label>
+          <input
+            type="number"
+            name="age"
+            onChange={(e) => setAge(e.target.value)}
+          />
           <button
             type="submit"
             style={{ width: 220 }}
